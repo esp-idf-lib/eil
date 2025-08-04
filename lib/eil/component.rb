@@ -6,7 +6,7 @@ require "yaml"
 class EIL
   # A class represents esp-idf-lib components
   class Component
-    @@git_submodule_result = []
+    @git_submodule_result = []
 
     ORG = "esp-idf-lib"
     GITHUB_URL = "https://github.com"
@@ -111,18 +111,19 @@ class EIL
     end
 
     def self.all
-      return @@git_submodule_result unless @@git_submodule_result.empty?
+      git_submodule_result = instance_variable_get(:@git_submodule_result)
+      return git_submodule_result unless git_submodule_result.empty?
 
       stdout = git_submodule
-      @@git_submodule_result = []
       stdout.each_line(chomp: true) do |line|
         # 1d24b0da13e9c0aae9ad985e4348d2fe50263e3c components/tda74xx (1.0.3-2-g1d24b0d)
         component_path = line.split[1]
         next unless component_path.start_with? "components"
 
-        @@git_submodule_result << Component.new(component_path.split("/").last)
+        git_submodule_result << Component.new(component_path.split("/").last)
       end
-      @@git_submodule_result
+      instance_variable_set(:@git_submodule_result, git_submodule_result)
+      git_submodule_result
     end
 
     def self.git_submodule
