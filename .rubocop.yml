@@ -6,6 +6,7 @@ AllCops:
   Exclude:
     - "*.gemspec"
     - spec/fixture/**/*
+    - vendor/**/*
   NewCops: enable
   TargetRubyVersion: 3.0
   # enable detailed explanations available in cops
