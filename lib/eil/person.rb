@@ -5,12 +5,10 @@ class EIL
   class Person
     attr_reader :name, :person
 
-    PERSONS_YML = EIL.root / "persons.yml"
-
     def initialize(name)
       @name = name
       @person = self.class.yaml.select { |p| p["name"] == name }.first
-      raise StandardError, "cannot find #{name} in #{PERSONS_YML}" unless @person
+      raise ArgumentError, "cannot find #{name} in #{EIL.root / "persons.yml"}" unless @person
     end
 
     def full_name
@@ -34,7 +32,7 @@ class EIL
     end
 
     def self.yaml
-      persons = YAML.safe_load_file(PERSONS_YML)
+      persons = YAML.safe_load_file(EIL.root / "persons.yml")
       persons.sort do |a, b|
         name_a = a.key?("full_name") ? a["full_name"] : a["name"]
         name_b = b.key?("full_name") ? b["full_name"] : b["name"]

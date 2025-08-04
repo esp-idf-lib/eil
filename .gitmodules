@@ -1,0 +1,6 @@
+[submodule "spec/fixture/components/esp_idf_lib_helpers"]
+	path = spec/fixture/components/esp_idf_lib_helpers
+	url = https://github.com/esp-idf-lib/esp_idf_lib_helpers.git
+[submodule "spec/fixture/components/aht"]
+	path = spec/fixture/components/aht
+	url = https://github.com/esp-idf-lib/aht.git

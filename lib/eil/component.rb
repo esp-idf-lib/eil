@@ -13,12 +13,14 @@ class EIL
     GITHUB_PAGES_URL = "https://esp-idf-lib.github.io"
     ESP_COMPONENT_REGISTRY_URL = "https://components.espressif.com"
 
-    attr_reader :name, :path
+    attr_reader :name
 
     def initialize(name)
       @name = name.chomp
-      @path = EIL.root / "components" / name
-      raise ArgumentError, "path #{@path} does not exist or not a directory" unless @path.exist? && @path.directory?
+    end
+
+    def path
+      EIL.root / "components" / name
     end
 
     def org
@@ -111,9 +113,7 @@ class EIL
     def self.all
       return @@git_submodule_result unless @@git_submodule_result.empty?
 
-      stdout, stderr, status = Open3.capture3("git submodule")
-      raise StandardError, "failed to run `git submodule`: #{stderr}" if status != 0
-
+      stdout = git_submodule
       @@git_submodule_result = []
       stdout.each_line(chomp: true) do |line|
         # 1d24b0da13e9c0aae9ad985e4348d2fe50263e3c components/tda74xx (1.0.3-2-g1d24b0d)
@@ -123,6 +123,15 @@ class EIL
         @@git_submodule_result << Component.new(component_path.split("/").last)
       end
       @@git_submodule_result
+    end
+
+    def self.git_submodule
+      stdout = nil
+      Dir.chdir EIL.root do
+        stdout, stderr, status = Open3.capture3("git submodule")
+        raise StandardError, "failed to run `git submodule`: #{stderr}" if status != 0
+      end
+      stdout
     end
   end
 end

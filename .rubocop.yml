@@ -3,6 +3,9 @@ plugins:
   - rubocop-rspec
 
 AllCops:
+  Exclude:
+    - "*.gemspec"
+    - spec/fixture/**/*
   NewCops: enable
   TargetRubyVersion: 3.0
   # enable detailed explanations available in cops

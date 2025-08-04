@@ -14,4 +14,4 @@
 /log/*
 /tmp/*
 
-/.rspec_status
+/**/.rspec_status
