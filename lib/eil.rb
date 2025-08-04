@@ -1,4 +1,5 @@
 require "pathname"
+require_relative "eil/version"
 
 class EIL
   def self.root
