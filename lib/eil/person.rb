@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 class EIL
   # A class to represents people contributed to the project
   class Person
-
     attr_reader :name, :person
 
     PERSONS_YML = EIL.root / "persons.yml"
@@ -17,7 +18,6 @@ class EIL
     end
 
     def gh_id
-
       person["gh_id"]
     end
 
@@ -34,7 +34,7 @@ class EIL
     end
 
     def self.yaml
-      persons = YAML.safe_load(File.read(PERSONS_YML))
+      persons = YAML.safe_load_file(PERSONS_YML)
       persons.sort do |a, b|
         name_a = a.key?("full_name") ? a["full_name"] : a["name"]
         name_b = b.key?("full_name") ? b["full_name"] : b["name"]

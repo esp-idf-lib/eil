@@ -4,7 +4,7 @@ require_relative "lib/eil/version"
 
 Gem::Specification.new do |spec|
   spec.name = "eil"
-  spec.version = Eil::VERSION
+  spec.version = EIL::VERSION
   spec.authors = ["Tomoyuki Sakurai"]
   spec.email = ["y@trombik.org"]
 

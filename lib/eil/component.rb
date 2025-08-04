@@ -6,7 +6,6 @@ require "yaml"
 class EIL
   # A class represents esp-idf-lib components
   class Component
-
     @@git_submodule_result = []
 
     ORG = "esp-idf-lib"
@@ -66,15 +65,16 @@ class EIL
     def badge_esp_component_svg_url
       "#{esp_component_url}/badge.svg"
     end
+
     def badge_esp_component_registry
-      #[![Component Registry](https://components.espressif.com/components/esp-idf-lib/hmc5883l/badge.svg)](https://components.espressif.com/components/esp-idf-lib/hmc5883l)
+      # [![Component Registry](https://components.espressif.com/components/esp-idf-lib/hmc5883l/badge.svg)](https://components.espressif.com/components/esp-idf-lib/hmc5883l)
       "[![Component Registry](#{badge_esp_component_svg_url})](#{esp_component_url})"
     end
 
     def eil
       return @eil if @eil
 
-      @eil = YAML.safe_load(File.read(path / ".eil.yml"))
+      @eil = YAML.safe_load_file(path / ".eil.yml")
     end
 
     ##
@@ -117,7 +117,7 @@ class EIL
       @@git_submodule_result = []
       stdout.each_line(chomp: true) do |line|
         # 1d24b0da13e9c0aae9ad985e4348d2fe50263e3c components/tda74xx (1.0.3-2-g1d24b0d)
-        component_path = line.split(" ")[1]
+        component_path = line.split[1]
         next unless component_path.start_with? "components"
 
         @@git_submodule_result << Component.new(component_path.split("/").last)
