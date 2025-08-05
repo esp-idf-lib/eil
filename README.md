@@ -19,7 +19,14 @@ version.
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "eil"
+
+EIL.root = "path/to/top/directory/of/core/repository"
+EIL::Component.all
+=> #<EIL::Component:0x00003f78233b9cc0 @name="aht">, #<EIL::Component:0x00003f78233b9090 @name="esp_idf_lib_helpers">
+
+```
 
 ## Development
 

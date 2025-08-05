@@ -26,3 +26,7 @@ jobs:
           bundler-cache: true
       - name: Run the default task
         run: bundle exec rake
+
+      - name: run rake doc
+        run: |
+          bundle exec rake doc

@@ -41,6 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-rspec", "~> 3.6"
   spec.add_development_dependency "pry", "~> 0.15.2"
   spec.add_development_dependency "yard", "~> 0.9.37"
+  spec.add_development_dependency "redcarpet", "~> 3.6"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

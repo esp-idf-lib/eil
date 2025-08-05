@@ -13,10 +13,10 @@ RuboCop::RakeTask.new
 
 task default: [:spec, :rubocop]
 
-desc "Build YARD documentation"
-task :yard do
+desc "Build documentation"
+task :doc do
   extra_files = %w[
     LICENSE.txt
   ]
-  sh "yard doc lib/**/*.rb - #{extra_files.map(&:shellescape).join}"
+  sh "yard doc - #{extra_files.map(&:shellescape).join}"
 end

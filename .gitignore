@@ -15,3 +15,5 @@
 /tmp/*
 
 /**/.rspec_status
+/.yardoc
+/doc
