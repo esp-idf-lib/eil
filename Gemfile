@@ -12,3 +12,5 @@ gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.21"
 
 gem "rubocop-rspec", "~> 3.6"
+
+gem "pry", "~> 0.15.2"
