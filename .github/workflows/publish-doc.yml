@@ -38,7 +38,7 @@ jobs:
     needs: build
     steps:
       - name: Configure GitHub Pages
-        uses: actions/configure-pages
+        uses: actions/configure-pages@v5.0.0
 
       - name: Deploy to GitHub Pages
         id: deployment
