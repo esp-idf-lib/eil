@@ -15,98 +15,153 @@ class EIL
 
     attr_reader :name
 
+    # Create an {EIL::Component} object.
+    #
+    # @raise [ArgumentError] When name is not found in the components.
     def initialize(name)
       @name = name.chomp
       raise ArgumentError, "#{@name} cannot be found" unless self.class.git_submodule_names.include? name
     end
 
+    # Path to the component's root directory.
+    #
+    # @return [Pathname]
     def path
       EIL.root / "components" / name
     end
 
+    # GitHub Organization name.
+    #
+    # @return [String]
     def org
       ORG
     end
 
+    # `{org}/{name}`
+    #
+    # @return [String]
     def fqdn
       "#{org}/#{name}"
     end
 
+    # Repository URL.
+    #
+    # @return [String]
     def repo_url
       "#{GITHUB_URL}/#{fqdn}"
     end
 
-    def esp_url
-      "#{ESP_COMPONENT_REGISTRY_URL}/components/#{fqdn}"
-    end
-
+    # URL to the documentation.
+    #
+    # @return [String]
     def doc_url
       "#{GITHUB_PAGES_URL}/#{name}"
     end
 
+    # URL to the Issues.
+    #
+    # @return [String]
     def issues_url
       "#{repo_url}/issues"
     end
 
+    # URL to a badge SVG image.
+    #
+    # @param [String] workflow_file The workflow file name
+    # @return [String]
     def badge_svg_url(workflow_file)
       "#{workflow_url(workflow_file)}/badge.svg"
     end
 
+    # URL to a workflow page on GitHub.
+    #
+    # @param [String] workflow_file The workflow file name
+    # @return [String]
     def workflow_url(workflow_file)
       "#{repo_url}/actions/workflows/#{workflow_file}"
     end
 
+    # Markdown markup to show a badge of a workflow.
+    #
+    # @param [String] workflow_file Workflow file name.
+    # @return [String]
     def badge(workflow_file)
       workflow_name = workflow_file.split(".").first
       "[![#{workflow_name}](#{badge_svg_url(workflow_file)})](#{workflow_url(workflow_file)})"
     end
 
+    # URL to component page on ESP Component Repository
+    #
+    # @return [String]
     def esp_component_url
       "#{ESP_COMPONENT_REGISTRY_URL}/components/#{fqdn}"
     end
 
+    # URL to a SVG badge image of ESP Component Repository
+    #
+    # @return [String]
     def badge_esp_component_svg_url
       "#{esp_component_url}/badge.svg"
     end
 
+    # Markdown markup to show a badge of a component on ESP Component
+    # Repository.
+    #
+    # @return [String]
     def badge_esp_component_registry
       # [![Component Registry](https://components.espressif.com/components/esp-idf-lib/hmc5883l/badge.svg)](https://components.espressif.com/components/esp-idf-lib/hmc5883l)
       "[![Component Registry](#{badge_esp_component_svg_url})](#{esp_component_url})"
     end
 
+    # Returns `.eil.yml` as a Hash.
+    #
+    # @return [Hash] the content of the file
     def eil
       return @eil if @eil
 
       @eil = YAML.safe_load_file(path / ".eil.yml")
     end
 
-    ##
     # Reload .eil.yml and refresh the state of the object. Call this method if
-    # .eil.yml might have been changed.
+    # `.eil.yml` might have been changed.
     def reload
       @eil = nil
     end
 
+    # Array of personis who contributed to the component found in `copyrights`
+    #
+    # @return [Array<String>]
     def contributors
       eil["copyrights"].map { |c| c["name"] }
     end
 
+    # Returns true if name contributed to the component.
+    #
+    # @param [String] name name of the person
     def contributed_by?(name)
       contributors.include? name
     end
 
+    # A short cut to eil["groups"]
     def groups
       eil["groups"]
     end
 
+    # Returns true if group is included in groups
     def group_of?(group)
       eil["groups"].include? group
     end
 
+    # A short cut to eil["description"]
+    #
+    # @return [String]
     def description
       eil["description"]
     end
 
+    # A short cut to eil["version"]
+    #
+    # @return [String]
     def version
       eil["version"]
     end
