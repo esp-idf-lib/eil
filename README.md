@@ -28,6 +28,10 @@ EIL::Component.all
 
 ```
 
+## Documentation
+
+See [API documentation](https://esp-idf-lib.github.io/eil/).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then,
