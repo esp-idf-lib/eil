@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  # required by actions/deploy-pages
+  pages: write
+  id-token: write
+
 jobs:
   # Build job
   build:
