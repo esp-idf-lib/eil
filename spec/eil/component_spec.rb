@@ -11,6 +11,23 @@ RSpec.describe EIL::Component do
     EIL.root = root
   end
 
+  describe ".git_submodule" do
+    it "returns String of the output" do
+      expect(described_class.git_submodule).to be_a String
+    end
+
+    it "caches the output of git submodule" do
+      described_class.git_submodule
+      expect(described_class.instance_variable_get(:@git_submodule_result)).not_to be_nil
+    end
+  end
+
+  describe ".git_submodule_names" do
+    it "returns Array of component names" do
+      expect(described_class.git_submodule_names).to eq %w[aht esp_idf_lib_helpers]
+    end
+  end
+
   describe ".all" do
     it "returns array of components" do
       expect(described_class.all).to be_a(Array).and all(be_an described_class)
@@ -20,6 +37,12 @@ RSpec.describe EIL::Component do
   describe ".new" do
     it "does not raise" do
       expect { described_class.new(name) }.not_to raise_error
+    end
+
+    context "when the component cannot be found" do
+      it "raise ArgumentError" do
+        expect { described_class.new("foobarbuz") }.to raise_error ArgumentError
+      end
     end
   end
 

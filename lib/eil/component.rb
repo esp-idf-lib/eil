@@ -6,7 +6,7 @@ require "yaml"
 class EIL
   # A class represents esp-idf-lib components
   class Component
-    @git_submodule_result = []
+    @git_submodule_result = ""
 
     ORG = "esp-idf-lib"
     GITHUB_URL = "https://github.com"
@@ -17,6 +17,7 @@ class EIL
 
     def initialize(name)
       @name = name.chomp
+      raise ArgumentError, "#{@name} cannot be found" unless self.class.git_submodule_names.include? name
     end
 
     def path
@@ -110,29 +111,48 @@ class EIL
       eil["version"]
     end
 
+    # Returns Array of all components as EIL::Component
+    #
+    # @return [Array<EIL::Component>]
     def self.all
+      git_submodule_names.map { |name| Component.new(name) }
+    end
+
+    # Runs `git submodule`. The output of the command is cached so that
+    # multiple calls do not run the command multiple times.
+    #
+    # @return [String] The output of the command
+    # @raise [RuntimeError] When the command fails
+    def self.git_submodule
+      # if cache is not empty, use cache
       git_submodule_result = instance_variable_get(:@git_submodule_result)
       return git_submodule_result unless git_submodule_result.empty?
 
-      stdout = git_submodule
-      stdout.each_line(chomp: true) do |line|
+      stdout = nil
+      Dir.chdir EIL.root do
+        stdout, stderr, status = Open3.capture3("git submodule")
+        raise "failed to run `git submodule`: #{stderr}" unless status.success?
+      end
+
+      # keep the result in cache
+      instance_variable_set(:@git_submodule_result, stdout)
+      stdout
+    end
+
+    # Finds all components from git submodule command and returns Array of
+    # component names.
+    #
+    # @return [iArray<String>]
+    def self.git_submodule_names
+      name = []
+      git_submodule.each_line(chomp: true) do |line|
         # 1d24b0da13e9c0aae9ad985e4348d2fe50263e3c components/tda74xx (1.0.3-2-g1d24b0d)
         component_path = line.split[1]
         next unless component_path.start_with? "components"
 
-        git_submodule_result << Component.new(component_path.split("/").last)
+        name << component_path.split("/")[1]
       end
-      instance_variable_set(:@git_submodule_result, git_submodule_result)
-      git_submodule_result
-    end
-
-    def self.git_submodule
-      stdout = nil
-      Dir.chdir EIL.root do
-        stdout, stderr, status = Open3.capture3("git submodule")
-        raise StandardError, "failed to run `git submodule`: #{stderr}" if status != 0
-      end
-      stdout
+      name.sort
     end
   end
 end
