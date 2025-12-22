@@ -2,7 +2,10 @@
 
 require "open3"
 require "yaml"
+require "semantic"
+require "shellwords"
 
+# rubocop:disable Metrics/ClassLength
 class EIL
   # A class represents esp-idf-lib components
   class Component
@@ -166,6 +169,35 @@ class EIL
       eil["version"]
     end
 
+    # A wrapper method of Open3.capture3
+    #
+    # @param cmd [Array<String>] Command and options
+    def run(*cmd)
+      Open3.capture3(*cmd)
+    end
+
+    # Returns all semver versions. Leading "v" is removed. The result is
+    # sorted and the first element is the latest one. Ignores tags that are
+    # not a semver string.
+    #
+    # @return [Array<Semantic::Version>]
+    def versions
+      stdout, = run("git", "tag")
+      result = stdout.lines(chomp: true).map do |line|
+        Semantic::Version.new(line.gsub(/\Av/, ""))
+      rescue ArgumentError
+        # ignore non-semver tags
+      end
+      result.sort { |a, b| b <=> a }
+    end
+
+    # Returns the latest version
+    #
+    # #return [Semantic::Version]
+    def latest_version
+      versions.first
+    end
+
     # Returns Array of all components as EIL::Component
     #
     # @return [Array<EIL::Component>]
@@ -211,3 +243,4 @@ class EIL
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

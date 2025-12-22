@@ -129,4 +129,61 @@ RSpec.describe EIL::Component do
       expect(c.version).to be_a String
     end
   end
+
+  describe "#run" do
+    it "runs a command" do
+      expect(c.run("echo ok").first).to eq "ok\n"
+    end
+  end
+
+  describe "#versions" do
+    it "returns all versions" do
+      expect(c.versions).to be_a Array
+    end
+
+    it "returns Array of Semantic::Version" do
+      expect(c.versions).to all(be_a Semantic::Version)
+    end
+
+    specify "the versions are sorted" do
+      versions = ["1.0.0", "2.0.0", "0.0.1"].join("\n")
+      allow(Open3).to receive(:capture3).and_return(versions)
+      result = c.versions.map(&:to_s)
+
+      expect(result).to eq(["2.0.0", "1.0.0", "0.0.1"])
+    end
+
+    context "when no versions are found" do
+      it "returns empty Array" do
+        allow(Open3).to receive(:capture3).and_return("")
+
+        expect(c.versions).to be_empty
+      end
+    end
+
+    context "when a tag has a prefix, 'v'" do
+      it "removes 'v'" do
+        allow(Open3).to receive(:capture3).and_return("v1.0.0\n")
+
+        expect(c.versions).to contain_exactly(Semantic::Version.new("1.0.0"))
+      end
+    end
+
+    context "when versions include non-semver" do
+      it "does not raise" do
+        allow(Open3).to receive(:capture3).and_return("foo\n")
+
+        expect { c.versions }.not_to raise_error
+      end
+    end
+  end
+
+  describe "#latest_version" do
+    it "returns the latest version" do
+      versions = ["1.0.0", "2.0.0", "0.0.1"].join("\n")
+      allow(Open3).to receive(:capture3).and_return(versions)
+
+      expect(c.latest_version.to_s).to eq "2.0.0"
+    end
+  end
 end
